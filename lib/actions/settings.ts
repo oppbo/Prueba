@@ -48,7 +48,7 @@ export async function uploadBankQr(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   const orgId = session.organization.id;
   const path = `${orgId}/bank-qr-${randomUUID()}.${upload.type.ext}`;
-  const { error: upErr } = await supabase.storage.from("org-assets").upload(path, upload.file, { contentType: upload.type.mime, upsert: false });
+  const { error: upErr } = await supabase.storage.from("org-assets").upload(path, await upload.file.arrayBuffer(), { contentType: upload.type.mime, upsert: false });
   if (upErr) return fail("No se pudo subir el QR. Intenta nuevamente.");
 
   const previous = session.organization.bank_qr_path;

@@ -33,7 +33,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-card focus:px-3 focus:py-2 focus:shadow">
         Saltar al contenido
       </a>
-      <aside className="sticky top-0 hidden h-dvh border-r border-border bg-card lg:block">
+      <aside className="sticky top-0 hidden h-dvh self-start border-r border-border bg-card lg:block">
         <SidebarContent {...shell} />
       </aside>
       <div className="min-w-0">

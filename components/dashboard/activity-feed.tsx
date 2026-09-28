@@ -55,7 +55,7 @@ export function Timeline({ events, showCustomer = false, compact = false }: { ev
                 {e.invoice_number && e.invoice_id && (
                   <>
                     {" · "}
-                    <Link href={`/dashboard/invoices/${e.invoice_id}`} className="text-muted-foreground hover:text-foreground hover:underline">
+                    <Link href={`/dashboard/invoices/${e.invoice_id}`} className="whitespace-nowrap text-muted-foreground hover:text-foreground hover:underline">
                       {e.invoice_number}
                     </Link>
                   </>

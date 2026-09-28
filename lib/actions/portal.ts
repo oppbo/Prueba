@@ -37,7 +37,7 @@ export async function submitPaymentProof(token: string, formData: FormData): Pro
   if (!info?.organization || !info.invoice) return fail("El enlace de pago no es válido o expiró.");
 
   const path = `${info.organization.id}/${info.invoice.id}/${randomUUID()}.${upload.type.ext}`;
-  const { error: uploadError } = await admin.storage.from("payment-proofs").upload(path, upload.file, {
+  const { error: uploadError } = await admin.storage.from("payment-proofs").upload(path, await upload.file.arrayBuffer(), {
     contentType: upload.type.mime,
     upsert: false,
   });

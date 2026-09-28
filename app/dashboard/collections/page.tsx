@@ -98,18 +98,18 @@ export default async function CollectionsPage({ searchParams }: PageProps<"/dash
                             {formatPhone(inv.customer_phone)}
                           </a>
                           {" · "}
-                          <Link href={`/dashboard/invoices/${inv.id}`} className="hover:text-foreground hover:underline">
+                          <Link href={`/dashboard/invoices/${inv.id}`} className="whitespace-nowrap hover:text-foreground hover:underline">
                             Factura {inv.invoice_number}
                           </Link>
                         </p>
                         <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[13px]">
-                          <div className="flex gap-1.5">
+                          <div className="flex flex-wrap gap-x-1.5">
                             <dt className="text-muted-foreground">Vence:</dt>
                             <dd className={cn(overdue && "text-destructive")}>
                               {formatDate(inv.due_date)} ({dueLabel(inv.due_date, today).toLowerCase()})
                             </dd>
                           </div>
-                          <div className="flex gap-1.5">
+                          <div className="flex flex-wrap gap-x-1.5">
                             <dt className="text-muted-foreground">Último contacto:</dt>
                             <dd>{inv.last_contact_at ? formatRelative(inv.last_contact_at) : "Nunca"}</dd>
                           </div>

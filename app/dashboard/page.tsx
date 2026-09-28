@@ -6,7 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Money } from "@/components/shared/money";
-import { InvoiceStatusBadge, OverdueBadge } from "@/components/shared/status-badge";
+import { OverdueBadge } from "@/components/shared/status-badge";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { ReceivablesChart } from "@/components/dashboard/receivables-chart";
 import { Timeline } from "@/components/dashboard/activity-feed";
@@ -177,7 +177,6 @@ export default async function DashboardPage() {
                           <TH className="text-right">Monto</TH>
                           <TH>Vencimiento</TH>
                           <TH>Atraso</TH>
-                          <TH>Estado</TH>
                           <TH className="text-right">
                             <span className="sr-only">Acción</span>
                           </TH>
@@ -191,7 +190,7 @@ export default async function DashboardPage() {
                                 {inv.customer_name}
                               </Link>
                             </TD>
-                            <TD>
+                            <TD className="whitespace-nowrap">
                               <Link href={`/dashboard/invoices/${inv.id}`} className="text-muted-foreground hover:text-foreground hover:underline">
                                 {inv.invoice_number}
                               </Link>
@@ -202,9 +201,6 @@ export default async function DashboardPage() {
                             <TD className="whitespace-nowrap text-muted-foreground">{formatDate(inv.due_date)}</TD>
                             <TD>
                               <OverdueBadge days={inv.days_overdue} />
-                            </TD>
-                            <TD>
-                              <InvoiceStatusBadge status={inv.effective_status} />
                             </TD>
                             <TD className="text-right">
                               <ReminderDialog invoices={[toCollectible(inv)]} triggerLabel="Recordar" />

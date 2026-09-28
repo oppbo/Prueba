@@ -28,7 +28,7 @@ export function ReceivablesChart({ data }: { data: MonthPoint[] }) {
             <YAxis
               tickLine={false}
               axisLine={false}
-              width={78}
+              width={72}
               tick={{ fontSize: 12, fill: "#71717a" }}
               tickFormatter={(v: number) => formatBsCompact(v)}
             />
@@ -49,7 +49,7 @@ export function ReceivablesChart({ data }: { data: MonthPoint[] }) {
                 ) : null
               }
             />
-            <Bar dataKey="collected" fill={COLLECTED} radius={[4, 4, 0, 0]} maxBarSize={36} />
+            <Bar dataKey="collected" fill={COLLECTED} radius={[4, 4, 0, 0]} maxBarSize={36} isAnimationActive={false} />
             <Line
               dataKey="outstanding"
               stroke={OUTSTANDING}
@@ -57,6 +57,7 @@ export function ReceivablesChart({ data }: { data: MonthPoint[] }) {
               dot={{ r: 4, fill: OUTSTANDING, stroke: "#fff", strokeWidth: 2 }}
               activeDot={{ r: 5, stroke: "#fff", strokeWidth: 2 }}
               type="monotone"
+              isAnimationActive={false}
             />
           </ComposedChart>
         </ResponsiveContainer>

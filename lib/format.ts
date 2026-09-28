@@ -27,8 +27,9 @@ export function formatBs(value: number | string | null | undefined, decimals = 2
 /** Compact version for chart axes: "Bs 24,6 mil". */
 export function formatBsCompact(value: number): string {
   const abs = Math.abs(value);
-  if (abs >= 1_000_000) return `Bs ${formatNumberBo(value / 1_000_000, 1)} M`;
-  if (abs >= 1_000) return `Bs ${formatNumberBo(value / 1_000, 1)} mil`;
+  const trim = (n: number) => formatNumberBo(n, Number.isInteger(Math.round(n * 10) / 10) ? 0 : 1);
+  if (abs >= 1_000_000) return `Bs ${trim(value / 1_000_000)} M`;
+  if (abs >= 1_000) return `Bs ${trim(value / 1_000)}k`;
   return `Bs ${formatNumberBo(value, 0)}`;
 }
 
@@ -117,19 +118,21 @@ export function formatRelative(timestamp: string | null | undefined): string {
   return formatDistanceToNowStrict(parseISO(timestamp), { locale: es, addSuffix: true });
 }
 
+const MONTHS_SHORT = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
 /** "28 sep, 14:05" in La Paz time. */
 export function formatDateTime(timestamp: string | null | undefined): string {
   if (!timestamp) return "—";
-  const parts = new Intl.DateTimeFormat("es-BO", {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: TIMEZONE,
     day: "numeric",
-    month: "short",
+    month: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
+    hourCycle: "h23",
   }).formatToParts(new Date(timestamp));
   const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-  return `${get("day")} ${get("month").replace(".", "")}, ${get("hour")}:${get("minute")}`;
+  return `${get("day")} ${MONTHS_SHORT[Number(get("month")) - 1]}, ${get("hour")}:${get("minute")}`;
 }
 
 export function monthLabel(isoMonth: string): string {
