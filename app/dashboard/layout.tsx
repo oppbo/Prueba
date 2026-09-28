@@ -47,6 +47,14 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             <Logo />
           </Link>
         </header>
+        {session.isDemo && (
+          <div className="border-b border-primary/15 bg-primary-soft px-4 py-2 text-center text-[13px] text-primary-soft-foreground">
+            Estás usando una demo privada con datos ficticios. Explora con libertad: nadie más ve tus cambios.{" "}
+            <Link href="/signup" className="font-semibold underline underline-offset-2">
+              Crear mi cuenta
+            </Link>
+          </div>
+        )}
         <main id="main" className="mx-auto w-full max-w-[1200px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           <ReminderProvider
             value={{ organizationName: session.organization.name, templates: resolveTemplates(session.organization.reminder_templates) }}

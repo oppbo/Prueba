@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build",
     "seed": "tsx scripts/seed.ts",
-    "test:db": "bash supabase/tests/run.sh"
+    "test:db": "bash supabase/tests/run.sh",
+    "demo:cleanup": "tsx scripts/cleanup-demo.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

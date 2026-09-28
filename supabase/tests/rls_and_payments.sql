@@ -225,7 +225,26 @@ do $$ begin
   end;
 end $$;
 
+-- deleting an organization removes all of its data (used by demo sandbox cleanup)
 reset role;
+delete from public.organizations where id = (select org_a from t_ids);
+do $$ begin
+  assert (select count(*) from public.invoices) = 0, 'org delete cascades invoices';
+  assert (select count(*) from public.payments) = 0, 'org delete cascades payments';
+  assert (select count(*) from public.customers) = 0, 'org delete cascades customers';
+end $$;
+-- but a customer with invoices cannot be deleted on its own
+insert into public.customers (id, organization_id, name, phone) select 'bbbbbbbb-0000-0000-0000-000000000001', org_b, 'X', '70000001' from t_ids;
+insert into public.invoices (organization_id, customer_id, invoice_number, issue_date, due_date, original_amount)
+select org_b, 'bbbbbbbb-0000-0000-0000-000000000001', 'B-1', current_date, current_date, 10 from t_ids;
+do $$ begin
+  begin
+    delete from public.customers where id = 'bbbbbbbb-0000-0000-0000-000000000001';
+    raise exception 'expected FK violation';
+  exception when foreign_key_violation then null;
+  end;
+end $$;
+
 \o
 \echo 'ALL DATABASE TESTS PASSED'
 rollback;

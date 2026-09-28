@@ -117,7 +117,7 @@ create table public.invoices (
   unique (organization_id, invoice_number),
   check (due_date >= issue_date),
   foreign key (customer_id, organization_id)
-    references public.customers (id, organization_id) on delete restrict
+    references public.customers (id, organization_id)
 );
 
 create table public.payments (
@@ -138,9 +138,9 @@ create table public.payments (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   foreign key (customer_id, organization_id)
-    references public.customers (id, organization_id) on delete restrict,
+    references public.customers (id, organization_id),
   foreign key (invoice_id, organization_id)
-    references public.invoices (id, organization_id) on delete restrict
+    references public.invoices (id, organization_id)
 );
 
 create table public.collection_events (

@@ -10,6 +10,8 @@ export type SessionContext = {
   fullName: string | null;
   role: MemberRole;
   organization: OrganizationRow;
+  /** Throwaway sandbox created by "Probar demo". */
+  isDemo: boolean;
 };
 
 /**
@@ -43,6 +45,7 @@ export const getSession = cache(async (): Promise<SessionContext | null> => {
     fullName: profile?.full_name ?? null,
     role: membership.role,
     organization,
+    isDemo: user.user_metadata?.is_demo === true,
   };
 });
 

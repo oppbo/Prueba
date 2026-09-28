@@ -1,6 +1,9 @@
 "use server";
 
+import { randomBytes, randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
+import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
+import { DEMO_PROFILE, DEMO_SANDBOX_DOMAIN, seedDemoOrganization } from "@/lib/demo/seed-data";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getSiteUrl, safeNextPath } from "@/lib/site-url";
@@ -55,16 +58,41 @@ export async function signOut() {
 }
 
 /**
- * Signs into the shared demo account (fictional data only). Credentials live in
- * server-side env vars; when they are not configured the visitor is sent to signup.
+ * "Probar demo": creates a private, throwaway sandbox (its own user + organization)
+ * filled with fictional data, and signs the visitor into it. Visitors never share
+ * an account, so nobody can alter what another visitor sees or take over a shared
+ * login. Sandboxes are removed by `npm run demo:cleanup`.
  */
 export async function signInDemo(): Promise<ActionResult> {
-  const email = process.env.DEMO_USER_EMAIL;
-  const password = process.env.DEMO_USER_PASSWORD;
-  if (!isSupabaseConfigured() || !email || !password) redirect("/signup?demo=unavailable");
+  if (!isSupabaseConfigured() || !isAdminConfigured()) redirect("/signup?demo=unavailable");
+
+  const admin = createAdminClient();
+  const email = `demo-${randomUUID()}@${DEMO_SANDBOX_DOMAIN}`;
+  const password = randomBytes(24).toString("base64url");
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { ...DEMO_PROFILE, is_demo: true },
+  });
+  if (createError || !created.user) return fail("La demo no está disponible en este momento. Crea una cuenta gratuita para probar CobraYa.");
+
+  try {
+    const { data: membership } = await admin
+      .from("organization_members")
+      .select("organization_id")
+      .eq("user_id", created.user.id)
+      .single();
+    if (!membership) throw new Error("sandbox organization missing");
+    await seedDemoOrganization(admin, created.user.id, membership.organization_id);
+  } catch (err) {
+    console.error("demo sandbox seed failed", err);
+    await admin.auth.admin.deleteUser(created.user.id);
+    return fail("No pudimos preparar la demo. Intenta nuevamente en unos segundos.");
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return fail("La demo no está disponible en este momento. Crea una cuenta gratuita para probar CobraYa.");
+  if (error) return fail("No pudimos iniciar la demo. Intenta nuevamente.");
   redirect("/dashboard");
 }
