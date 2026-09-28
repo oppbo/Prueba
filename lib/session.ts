@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/env";
 import type { MemberRole, OrganizationRow } from "@/types/database";
 
 export type SessionContext = {
@@ -19,6 +20,7 @@ export type SessionContext = {
  * Identity is verified against Supabase Auth (getUser), never trusted from cookies alone.
  */
 export const getSession = cache(async (): Promise<SessionContext | null> => {
+  if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const {
     data: { user },
