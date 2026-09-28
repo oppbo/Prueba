@@ -1,0 +1,4 @@
+Cliente,Teléfono,NIT,Factura,Fecha emisión,Fecha vencimiento,Monto,Descripción
+Ferretería Illimani,71234567,1023456027,F-001001,01/09/2026,01/10/2026,"2.450,00",Cemento y fierro de construcción
+Comercial San Miguel,76543210,4567890011,F-001002,05/09/2026,05/10/2026,"7.800,00",Pedido mensual de abarrotes
+Repuestos Altiplano,+591 72012345,,F-001003,10/09/2026,25/09/2026,850,Filtros y pastillas de freno

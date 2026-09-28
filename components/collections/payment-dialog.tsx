@@ -18,7 +18,9 @@ export function PaymentDialog({
   invoice,
   triggerLabel = "Registrar pago",
   triggerProps,
+  iconOnly = false,
 }: {
+  iconOnly?: boolean;
   invoice: Pick<CollectibleInvoice, "id" | "invoice_number" | "customer_name" | "outstanding_amount">;
   triggerLabel?: string;
   triggerProps?: ButtonProps;
@@ -27,9 +29,9 @@ export function PaymentDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary" size="sm" {...triggerProps}>
+        <Button variant="secondary" size={iconOnly ? "icon-sm" : "sm"} title={iconOnly ? "Registrar pago" : undefined} {...triggerProps}>
           <Banknote />
-          {triggerLabel}
+          {iconOnly ? <span className="sr-only">Registrar pago</span> : triggerLabel}
         </Button>
       </DialogTrigger>
       <DialogContent size="sm">{open && <PaymentForm invoice={invoice} onDone={() => setOpen(false)} />}</DialogContent>

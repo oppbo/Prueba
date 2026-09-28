@@ -28,19 +28,21 @@ export function ReminderDialog({
   invoices,
   triggerLabel = "WhatsApp",
   triggerProps,
+  iconOnly = false,
 }: {
   invoices: CollectibleInvoice[];
   triggerLabel?: string;
   triggerProps?: ButtonProps;
+  iconOnly?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   if (invoices.length === 0) return null;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="whatsapp" size="sm" {...triggerProps}>
+        <Button variant="whatsapp" size={iconOnly ? "icon-sm" : "sm"} title={iconOnly ? "Recordar por WhatsApp" : undefined} {...triggerProps}>
           <MessageCircle />
-          {triggerLabel}
+          {iconOnly ? <span className="sr-only">Recordar por WhatsApp</span> : triggerLabel}
         </Button>
       </DialogTrigger>
       <DialogContent size="md">{open && <ReminderForm invoices={invoices} onDone={() => setOpen(false)} />}</DialogContent>
@@ -57,7 +59,8 @@ function ReminderForm({ invoices, onDone }: { invoices: CollectibleInvoice[]; on
   const [templateId, setTemplateId] = useState<ReminderTemplateId>(suggestTemplate(daysUntilDue));
   const [links, setLinks] = useState<Record<string, string>>({});
   const [linkError, setLinkError] = useState<string | null>(null);
-  const [message, setMessage] = useState("");
+  // Edits are kept per rendered template: switching template/invoice re-fills the text.
+  const [edited, setEdited] = useState<{ base: string; text: string } | null>(null);
   const [opening, setOpening] = useState(false);
   const paymentUrl = links[invoice.id];
 
@@ -90,8 +93,7 @@ function ReminderForm({ invoices, onDone }: { invoices: CollectibleInvoice[]; on
     [paymentUrl, templates, templateId, invoice, organizationName, daysUntilDue],
   );
 
-  // Re-fill the editable message whenever the template, invoice or link changes.
-  useEffect(() => setMessage(rendered), [rendered]);
+  const message = edited && edited.base === rendered ? edited.text : rendered;
 
   const phoneOk = normalizePhone(invoice.customer_phone) !== null;
 
@@ -154,7 +156,7 @@ function ReminderForm({ invoices, onDone }: { invoices: CollectibleInvoice[]; on
           </div>
         ) : (
           <Field id="reminder-message" label="Mensaje" hint="Puedes editar el texto antes de abrir WhatsApp.">
-            <Textarea rows={9} value={message} onChange={(e) => setMessage(e.target.value)} maxLength={2000} />
+            <Textarea rows={9} value={message} onChange={(e) => setEdited({ base: rendered, text: e.target.value })} maxLength={2000} />
           </Field>
         )}
         {!phoneOk && (
